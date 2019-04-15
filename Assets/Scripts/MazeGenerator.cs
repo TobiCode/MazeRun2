@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class MazeGenerator : MonoBehaviour
@@ -20,10 +19,15 @@ public class MazeGenerator : MonoBehaviour
     {
         cellsOfMaze = InitializeAllCells(mazeWidth, mazeHeight);
         InitializeWallsOfCells(wallPrefab, mazeWidth, mazeHeight);
+        
         foreach (Cell cell in cellsOfMaze)
         {
             Debug.Log(cell.ToString());
         }
+        
+        //Delete Walls to get Maze
+        Cell initCell = FindCellInCellList(Random.RandomRange(1, (mazeWidth * mazeHeight)));
+        DeleteWallsDepthFirst(initCell);
     }
 
     // Update is called once per frame
@@ -240,7 +244,7 @@ public class MazeGenerator : MonoBehaviour
                 float zOfWall = ((indexOfCell - 1) / mazeWidth +1) * lengthWall + 2 * widthWall;
                 Vector3 rot = new Vector3(0, 0, 0);
                 GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
-                cell.BottomWall = newWall;
+                cell.TopWall = newWall;
                 newWall.name = indexOfCell + "_TopWall";
             }
         }
@@ -257,9 +261,94 @@ public class MazeGenerator : MonoBehaviour
             float zOfWall = ((indexOfCell - 1) / mazeWidth + 1) * lengthWall + 2 * widthWall;
             Vector3 rot = new Vector3(0, 0, 0);
             GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
-            cell.BottomWall = newWall;
+            cell.TopWall = newWall;
             newWall.name = indexOfCell + "_TopWall";
         }
+    }
+
+    private void DeleteWallsDepthFirst(Cell randomCell)
+    {
+        randomCell.Visited = true;
+
+        Cell rightNeighbor = null;
+        if (randomCell.RightNeighbor > 0)
+        {
+            rightNeighbor = FindCellInCellList(randomCell.RightNeighbor);
+        }
+        else
+        {
+            rightNeighbor = new Cell(-1, mazeWidth, mazeHeight);
+            rightNeighbor.Visited = true;
+        }
+        Cell leftNeighbor = null;
+        if (randomCell.LeftNeighbor > 0)
+        {
+            leftNeighbor = FindCellInCellList(randomCell.LeftNeighbor);
+        }
+        else
+        {
+            leftNeighbor = new Cell(-1, mazeWidth, mazeHeight);
+            leftNeighbor.Visited = true;
+        }
+        Cell topNeighbor = null;
+        if (randomCell.TopNeighbor > 0)
+        {
+            topNeighbor = FindCellInCellList(randomCell.TopNeighbor);
+        }
+        else
+        {
+            topNeighbor = new Cell(-1, mazeWidth, mazeHeight);
+            topNeighbor.Visited = true;
+        }
+        Cell bottomNeighbor = null;
+        if (randomCell.BottomNeighbor > 0)
+        {
+            bottomNeighbor = FindCellInCellList(randomCell.BottomNeighbor);
+        }
+        else
+        {
+            bottomNeighbor = new Cell(-1, mazeWidth, mazeHeight);
+            bottomNeighbor.Visited = true;
+        }
+
+        while (rightNeighbor.Visited == false || leftNeighbor.Visited == false || topNeighbor.Visited == false || bottomNeighbor.Visited == false)
+        {
+            int randNumber = Random.Range(1, 5);
+            if(randNumber == 1 && rightNeighbor.Visited == false)
+            {
+                //Connect with rightNeighbor
+                Debug.Log("Delete Right Wall between: " + randomCell.Id + "-" + rightNeighbor.Id);
+                Destroy(randomCell.RightWall);
+                DeleteWallsDepthFirst(rightNeighbor);
+            }
+            else if (randNumber == 2 && leftNeighbor.Visited == false)
+            {
+                //Connect with leftNeighbor
+                Debug.Log("Delete Left Wall between: " + randomCell.Id + "-" + leftNeighbor.Id);
+
+                Destroy(randomCell.LeftWall);
+                DeleteWallsDepthFirst(leftNeighbor);
+            }
+            else if (randNumber == 3 && topNeighbor.Visited == false)
+            {
+                //Connect with topNeighbor
+                Debug.Log("Delete Top Wall between: " + randomCell.Id + "-" + topNeighbor.Id);
+
+                Destroy(randomCell.TopWall);
+                DeleteWallsDepthFirst(topNeighbor);
+            }
+            else if (randNumber == 4 && bottomNeighbor.Visited == false)
+            {
+                //Connect with bottomNeighbor
+                Debug.Log("Delete Bottom Wall between: " + randomCell.Id + "-" + bottomNeighbor.Id);
+
+                Destroy(randomCell.BottomWall);
+                DeleteWallsDepthFirst(bottomNeighbor);
+            }
+        }
+        
+
+
     }
 }
 

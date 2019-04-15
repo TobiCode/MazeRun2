@@ -292,8 +292,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0452eb1ec9b762469884295a763e5c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mazeWidth: 20
-  mazeHeight: 20
+  mazeWidth: 10
+  mazeHeight: 10
   wallPrefab: {fileID: 5068541148415961213, guid: 548fca945d4532e4fb5900cc0677c760,
     type: 3}
   maze: {fileID: 1454199399}

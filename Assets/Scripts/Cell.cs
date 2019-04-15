@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Cell
 {
+    private bool visited=false;
     private int widthMaze;
     private int heightMaze;
 
@@ -31,6 +32,7 @@ public class Cell
     public GameObject RightWall { get => rightWall; set => rightWall = value; }
     public GameObject TopWall { get => topWall; set => topWall = value; }
     public int Id { get => id; set => id = value; }
+    public bool Visited { get => visited; set => visited = value; }
 
     public Cell(int id, int widthMaze, int heightMaze)
     {
@@ -93,7 +95,7 @@ public class Cell
         returnString += "LeftWall: " + this.LeftWall.name + "\n";
         returnString += "RightWall: " + this.RightWall.name + "\n";
         returnString += "BottomWall: " + this.BottomWall.name + "\n";
-        //returnString += "TopWall: " + this.TopWall.name + "\n";
+        returnString += "TopWall: " + this.TopWall.name + "\n";
         return returnString;
     }
 
