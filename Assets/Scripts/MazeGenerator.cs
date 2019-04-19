@@ -10,13 +10,17 @@ public class MazeGenerator : MonoBehaviour
     public int mazeHeight;
     public GameObject wallPrefab;
     public GameObject maze;
-
-
-
+    private Material[] materials;
 
     // Start is called before the first frame update
     void Start()
     {
+        //Every Startup we want a random material for the walls
+        materials = Resources.LoadAll<Material>("WallMats");
+        Debug.Log("Materials Debug: " + materials);
+        int randomNumber = Random.RandomRange(0, materials.Length - 1);
+        wallPrefab.GetComponent<MeshRenderer>().material = materials[randomNumber];
+
         cellsOfMaze = InitializeAllCells(mazeWidth, mazeHeight);
         InitializeWallsOfCells(wallPrefab, mazeWidth, mazeHeight);
         
@@ -28,6 +32,7 @@ public class MazeGenerator : MonoBehaviour
         //Delete Walls to get Maze
         Cell initCell = FindCellInCellList(Random.RandomRange(1, (mazeWidth * mazeHeight)));
         DeleteWallsDepthFirst(initCell);
+        CreateEntryAndExitOfMaze(mazeWidth, mazeHeight);
     }
 
     // Update is called once per frame
@@ -78,7 +83,6 @@ public class MazeGenerator : MonoBehaviour
         }
     }
 
-
     private void CreateBottomWall(Cell cell,float lengthWall, float widthWall)
     {
         //Bottom Wall
@@ -96,6 +100,11 @@ public class MazeGenerator : MonoBehaviour
                 //Set Wall
                 int indexOfCell = cell.Id;
                 float xOfWall = (indexOfCell % mazeWidth) * -lengthWall;
+                if(indexOfCell % mazeWidth > 1)
+                {
+                    xOfWall = (indexOfCell % mazeWidth) * -lengthWall + widthWall;
+
+                }
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
@@ -141,13 +150,13 @@ public class MazeGenerator : MonoBehaviour
             {
                 //Set Wall
                 int indexOfCell = cell.Id;
-                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + lengthWall/2;
+                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + (lengthWall/2 - widthWall/2);
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
-                    xOfWall = mazeWidth * -lengthWall + lengthWall / 2;
+                    xOfWall = mazeWidth * -lengthWall + lengthWall / 2 - widthWall/2;
                 }
-                float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall;
+                float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + (2 * widthWall) + (lengthWall / 2) - 0.5f;
                 Vector3 rot = new Vector3(0, 90, 0);
                 GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
                 cell.RightWall = newWall;
@@ -188,13 +197,13 @@ public class MazeGenerator : MonoBehaviour
             {
                 //Set Wall
                 int indexOfCell = cell.Id;
-                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall - lengthWall / 2;
+                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall - lengthWall / 2 + widthWall/2;
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
-                    xOfWall = mazeWidth * -lengthWall - lengthWall / 2;
+                    xOfWall = mazeWidth * -lengthWall - lengthWall / 2 + widthWall/2;
                 }
-                float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall;
+                float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + lengthWall/2-widthWall/2;
                 Vector3 rot = new Vector3(0, 90, 0);
                 GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
                 cell.LeftWall = newWall;
@@ -235,13 +244,13 @@ public class MazeGenerator : MonoBehaviour
             {
                 //Set Wall
                 int indexOfCell = cell.Id;
-                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall;
+                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall ;
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
                     xOfWall = mazeWidth * -lengthWall;
                 }
-                float zOfWall = ((indexOfCell - 1) / mazeWidth +1) * lengthWall + 2 * widthWall;
+                float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + lengthWall - widthWall/2;
                 Vector3 rot = new Vector3(0, 0, 0);
                 GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
                 cell.TopWall = newWall;
@@ -348,6 +357,18 @@ public class MazeGenerator : MonoBehaviour
         }
         
 
+
+    }
+
+    private void CreateEntryAndExitOfMaze(int mazeWidth, int mazeHeight)
+    {
+        //Create Entry
+        Cell entryCell = FindCellInCellList(Random.RandomRange(1, mazeWidth));
+        Destroy((entryCell.BottomWall));
+
+        //Create Exit
+        Cell exitCell = FindCellInCellList(Random.RandomRange(mazeHeight*mazeWidth-mazeWidth, mazeHeight*mazeWidth));
+        Destroy((exitCell.TopWall));
 
     }
 }
