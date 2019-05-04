@@ -1,16 +1,34 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class MazeGenerator : MonoBehaviour
+public class MazeGenerator_TryToBeautify: MonoBehaviour
 {
+
+    public NavMeshSurface surface;
 
     private List<Cell> cellsOfMaze;
 
+    public int yOffsetWall;
     public int mazeWidth;
     public int mazeHeight;
     public GameObject wallPrefab;
     public GameObject maze;
     private Material[] materials;
+
+    public GameObject policeCar;
+    public GameObject ambulanceCar;
+
+    public float beautifyZShift;
+
+    //Coordinates of entry and exit
+    private float entryX;
+    private float entryY;
+    private float entryZ;
+
+    private float exitX;
+    private float exitY;
+    private float exitZ;
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +51,12 @@ public class MazeGenerator : MonoBehaviour
         Cell initCell = FindCellInCellList(Random.RandomRange(1, (mazeWidth * mazeHeight)));
         DeleteWallsDepthFirst(initCell);
         CreateEntryAndExitOfMaze(mazeWidth, mazeHeight);
+
+        //Instantiate Police and Ambulance
+        CreatePoliceAndAmbulanceAtEnd(ambulanceCar, policeCar);
+
+        //Update NavMesh
+        surface.BuildNavMesh();
     }
 
     // Update is called once per frame
@@ -100,11 +124,6 @@ public class MazeGenerator : MonoBehaviour
                 //Set Wall
                 int indexOfCell = cell.Id;
                 float xOfWall = (indexOfCell % mazeWidth) * -lengthWall;
-                if(indexOfCell % mazeWidth > 1)
-                {
-                    xOfWall = (indexOfCell % mazeWidth) * -lengthWall + widthWall;
-
-                }
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
@@ -112,7 +131,7 @@ public class MazeGenerator : MonoBehaviour
                 }
                 float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall;
                 Vector3 rot = new Vector3(0, 0, 0);
-                GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
+                GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, yOffsetWall, zOfWall), Quaternion.Euler(rot), maze.transform);
                 cell.BottomWall = newWall;
                 newWall.name = indexOfCell + "_BottomWall";
             }
@@ -129,7 +148,7 @@ public class MazeGenerator : MonoBehaviour
             }
             float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall;
             Vector3 rot = new Vector3(0, 0, 0);
-            GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
+            GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, yOffsetWall, zOfWall), Quaternion.Euler(rot), maze.transform);
             cell.BottomWall = newWall;
             newWall.name = indexOfCell + "_BottomWall";
         }
@@ -150,15 +169,15 @@ public class MazeGenerator : MonoBehaviour
             {
                 //Set Wall
                 int indexOfCell = cell.Id;
-                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + (lengthWall/2 - widthWall/2);
+                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + lengthWall/2;
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
-                    xOfWall = mazeWidth * -lengthWall + lengthWall / 2 - widthWall/2;
+                    xOfWall = mazeWidth * -lengthWall + lengthWall / 2;
                 }
-                float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + (2 * widthWall) + (lengthWall / 2) - 0.5f;
+                float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall + beautifyZShift;
                 Vector3 rot = new Vector3(0, 90, 0);
-                GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
+                GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, yOffsetWall, zOfWall), Quaternion.Euler(rot), maze.transform);
                 cell.RightWall = newWall;
                 newWall.name = indexOfCell + "_RightWall";
             }
@@ -173,9 +192,9 @@ public class MazeGenerator : MonoBehaviour
                 //last cell of row
                 xOfWall = mazeWidth * -lengthWall + lengthWall / 2;
             }
-            float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall;
+            float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall + beautifyZShift;
             Vector3 rot = new Vector3(0, 90, 0);
-            GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
+            GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, yOffsetWall, zOfWall), Quaternion.Euler(rot), maze.transform);
             cell.RightWall = newWall;
             newWall.name = indexOfCell + "_RightWall";
         }
@@ -197,15 +216,15 @@ public class MazeGenerator : MonoBehaviour
             {
                 //Set Wall
                 int indexOfCell = cell.Id;
-                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall - lengthWall / 2 + widthWall/2;
+                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall - lengthWall / 2;
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
-                    xOfWall = mazeWidth * -lengthWall - lengthWall / 2 + widthWall/2;
+                    xOfWall = mazeWidth * -lengthWall - lengthWall / 2;
                 }
-                float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + lengthWall/2-widthWall/2;
+                float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall + beautifyZShift;
                 Vector3 rot = new Vector3(0, 90, 0);
-                GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
+                GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, yOffsetWall, zOfWall), Quaternion.Euler(rot), maze.transform);
                 cell.LeftWall = newWall;
                 newWall.name = indexOfCell + "_LeftWall";
             }
@@ -220,9 +239,9 @@ public class MazeGenerator : MonoBehaviour
                 //last cell of row
                 xOfWall = mazeWidth * -lengthWall - lengthWall / 2;
             }
-            float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall;
+            float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall + beautifyZShift;
             Vector3 rot = new Vector3(0, 90, 0);
-            GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
+            GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, yOffsetWall, zOfWall), Quaternion.Euler(rot), maze.transform);
             cell.LeftWall = newWall;
             newWall.name = indexOfCell + "_LeftWall";
         }
@@ -244,15 +263,15 @@ public class MazeGenerator : MonoBehaviour
             {
                 //Set Wall
                 int indexOfCell = cell.Id;
-                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall ;
+                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall;
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
                     xOfWall = mazeWidth * -lengthWall;
                 }
-                float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + lengthWall - widthWall/2;
+                float zOfWall = ((indexOfCell - 1) / mazeWidth +1) * lengthWall + 2 * widthWall;
                 Vector3 rot = new Vector3(0, 0, 0);
-                GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
+                GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, yOffsetWall, zOfWall), Quaternion.Euler(rot), maze.transform);
                 cell.TopWall = newWall;
                 newWall.name = indexOfCell + "_TopWall";
             }
@@ -269,7 +288,7 @@ public class MazeGenerator : MonoBehaviour
             }
             float zOfWall = ((indexOfCell - 1) / mazeWidth + 1) * lengthWall + 2 * widthWall;
             Vector3 rot = new Vector3(0, 0, 0);
-            GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, 0, zOfWall), Quaternion.Euler(rot), maze.transform);
+            GameObject newWall = Instantiate(wallPrefab, new Vector3(xOfWall, yOffsetWall, zOfWall), Quaternion.Euler(rot), maze.transform);
             cell.TopWall = newWall;
             newWall.name = indexOfCell + "_TopWall";
         }
@@ -364,11 +383,25 @@ public class MazeGenerator : MonoBehaviour
     {
         //Create Entry
         Cell entryCell = FindCellInCellList(Random.RandomRange(1, mazeWidth));
+        entryX = entryCell.BottomWall.transform.position.x;
+        entryY = entryCell.BottomWall.transform.position.y;
+        entryZ = entryCell.BottomWall.transform.position.z;
         Destroy((entryCell.BottomWall));
 
         //Create Exit
         Cell exitCell = FindCellInCellList(Random.RandomRange(mazeHeight*mazeWidth-mazeWidth, mazeHeight*mazeWidth));
+        exitX = exitCell.BottomWall.transform.position.x;
+        exitY = exitCell.BottomWall.transform.position.y;
+        exitZ = exitCell.BottomWall.transform.position.z;
         Destroy((exitCell.TopWall));
+    }
+
+    private void CreatePoliceAndAmbulanceAtEnd(GameObject ambulanceCar, GameObject policeCar)
+    {
+        Vector3 rot = new Vector3(0, 240, 0);
+        Instantiate(policeCar, new Vector3(exitX+4, exitY, exitZ + 10), Quaternion.Euler(rot), maze.transform);
+        Vector3 rot2 = new Vector3(0, 120, 0);
+        Instantiate(ambulanceCar, new Vector3(exitX - 4, exitY, exitZ + 10), Quaternion.Euler(rot2), maze.transform);
 
     }
 }

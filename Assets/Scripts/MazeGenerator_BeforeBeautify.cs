@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class MazeGenerator_BeforeBeautify: MonoBehaviour
 {
+
+    public NavMeshSurface surface;
 
     private List<Cell> cellsOfMaze;
 
@@ -49,6 +52,9 @@ public class MazeGenerator_BeforeBeautify: MonoBehaviour
 
         //Instantiate Police and Ambulance
         CreatePoliceAndAmbulanceAtEnd(ambulanceCar, policeCar);
+
+        //Update NavMesh
+        surface.BuildNavMesh();
     }
 
     // Update is called once per frame
