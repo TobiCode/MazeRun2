@@ -17,9 +17,19 @@ public class CharacterControllerTobi : MonoBehaviour
     public float runSpeed = 0.05f;
     public float walkSpeed = 0.025f;
 
+    // Init camera pos and rotation
+    public Camera cameraFollowingPlayer;
+    private Vector3 cameraInitPos;
+    private Quaternion cameraInitRot;
+    public Vector3 cameraPosLookingBack;
+    public Vector3 cameraRotLookingBack;
+
+
     private void Start()
     {
         animator = gameObject.GetComponent<Animator>();
+        cameraInitPos = cameraFollowingPlayer.transform.localPosition;
+        cameraInitRot = cameraFollowingPlayer.transform.localRotation;
     }
 
     // Update is called once per frame
@@ -29,10 +39,22 @@ public class CharacterControllerTobi : MonoBehaviour
         float turnAxis = Input.GetAxis(TurnInputAxis);
 
         ApplyInput(moveAxis, turnAxis);
+
+        //Look back
+        if(Input.GetKeyDown(KeyCode.Space)){
+            cameraFollowingPlayer.transform.localPosition = cameraPosLookingBack;
+            cameraFollowingPlayer.transform.localRotation = Quaternion.Euler(cameraRotLookingBack);
+        }
+        else if (Input.GetKeyUp(KeyCode.Space))
+        {
+            cameraFollowingPlayer.transform.localPosition = cameraInitPos;
+            cameraFollowingPlayer.transform.localRotation =  cameraInitRot;
+        }
+
+
     }
 
-    private void ApplyInput(float moveInput,
-                            float turnInput)
+    private void ApplyInput(float moveInput, float turnInput)
     {
         Move(moveInput);
         Turn(turnInput);

@@ -21,6 +21,12 @@ public class EnemyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        if (navMeshAgent.speed > 0.75)
+        {
+            running = true;
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (!running)
