@@ -6,7 +6,7 @@
 /[Oo]bj/
 /[Bb]uild/
 /[Bb]uilds/
-/Assets/*
+/Assets/Assets*
 sysinfo.txt
 *.pidb.meta
  
