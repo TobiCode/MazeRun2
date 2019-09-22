@@ -4,23 +4,20 @@ using UnityEngine;
 
 public class Cell
 {
-    private bool visited=false;
+    private List<int> visitedCells = new List<int>();
+    private bool visited = false;
     private int widthMaze;
     private int heightMaze;
-
     private bool isStart;
     private bool isFinish;
-    
     private GameObject bottomWall;
     private GameObject leftWall;
     private GameObject rightWall;
     private GameObject topWall;
-
     private int leftNeighbor;
     private int rightNeighbor;
     private int topNeighbor;
     private int bottomNeighbor;
-
     private int id;
 
     public int LeftNeighbor { get => leftNeighbor; set => leftNeighbor = value; }
@@ -33,10 +30,11 @@ public class Cell
     public GameObject TopWall { get => topWall; set => topWall = value; }
     public int Id { get => id; set => id = value; }
     public bool Visited { get => visited; set => visited = value; }
+    public List<int> VisitedCells { get => visitedCells; set => visitedCells = value; }
 
     public Cell(int id, int widthMaze, int heightMaze)
     {
-        this.Id = id;
+        this.id = id;
         this.widthMaze = widthMaze;
         this.heightMaze = heightMaze;
         setNeighbors(id);
@@ -45,61 +43,26 @@ public class Cell
     private void setNeighbors(int id)
     {
         //Calculate leftNeighbor
-        if(id % widthMaze > 0)
-        {
-            this.LeftNeighbor = id + 1;
-        }
-        else
-        {
-            this.LeftNeighbor = 0;
-        }
-
+        this.leftNeighbor = (id % widthMaze) > 0 ? id + 1 : 0;
         //Calculate topNeighbor
-        if (id <= widthMaze*heightMaze-widthMaze)
-        {
-            this.TopNeighbor = id + widthMaze;
-        }
-        else
-        {
-            this.TopNeighbor = 0;
-        }
-
+        this.topNeighbor = id <= widthMaze*heightMaze-widthMaze ? id + widthMaze : 0;
         //Calculate rightNeighbor
-        if ((id % widthMaze) != (1))
-        {
-            this.RightNeighbor = id - 1;
-        }
-        else
-        {
-            this.RightNeighbor = 0;
-        }
-
+        this.rightNeighbor = ((id % widthMaze) != 1) ? id - 1 : 0;
         //Calculate bottomNeighbor
-        if (id > widthMaze)
-        {
-            this.BottomNeighbor = id - widthMaze;
-        }
-        else
-        {
-            this.BottomNeighbor = 0;
-        }
-
+        this.bottomNeighbor= id > widthMaze ? id - widthMaze : 0;
     }
 
-    public override string ToString() {
-        string returnString = "Cell " + this.id + "\n" ;
-        returnString += "LeftNeighbor: " + this.LeftNeighbor + "\n";
-        returnString += "TopNeighbor: " + this.TopNeighbor + "\n";
-        returnString += "RightNeighbor: " + this.RightNeighbor + "\n";
-        returnString += "BottomNeighbor: " + this.BottomNeighbor + "\n";
-        returnString += "LeftWall: " + this.LeftWall.name + "\n";
-        returnString += "RightWall: " + this.RightWall.name + "\n";
-        returnString += "BottomWall: " + this.BottomWall.name + "\n";
-        returnString += "TopWall: " + this.TopWall.name + "\n";
+    public override string ToString()
+    {
+        string returnString = "Cell " + this.id + "\n";
+        returnString += "LeftNeighbor: " + this.leftNeighbor + "\n";
+        returnString += "TopNeighbor: " + this.topNeighbor + "\n";
+        returnString += "RightNeighbor: " + this.rightNeighbor + "\n";
+        returnString += "BottomNeighbor: " + this.bottomNeighbor + "\n";
+        returnString += "LeftWall: " + this.leftWall + "\n";
+        returnString += "RightWall: " + this.rightWall + "\n";
+        returnString += "BottomWall: " + this.bottomWall + "\n";
+        returnString += "TopWall: " + this.topWall + "\n";
         return returnString;
     }
-
-
-
-
 }
