@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
 {
@@ -10,6 +12,7 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
     private Dictionary<int, Cell> cellsOfMaze;
 
     public int yOffsetWall;
+    public int xMazeStart;
     public int mazeWidth;
     public int mazeHeight;
     public GameObject wallPrefab;
@@ -18,6 +21,8 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
 
     public GameObject policeCar;
     public GameObject ambulanceCar;
+    public GameObject player;
+    public GameObject enemy;
 
     public float beautifyZShift;
 
@@ -37,30 +42,32 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
         //Every Startup we want a random material for the walls
         materials = Resources.LoadAll<Material>("WallMats");
         int randomNumber = Random.RandomRange(0, materials.Length - 1);
         wallPrefab.GetComponent<MeshRenderer>().material = materials[randomNumber];
         cellsOfMaze = InitializeAllCells(mazeWidth, mazeHeight);
         InitializeWallsOfCells(wallPrefab, mazeWidth, mazeHeight);
-        ////Delete Walls to get Maze
+        //Delete Walls to get Maze
         Cell initCell = cellsOfMaze[Random.RandomRange(1, (mazeWidth * mazeHeight))];
         DeleteWallsDepthFirst(initCell);
         CreateEntryAndExitOfMaze(mazeWidth, mazeHeight);
-
         //Instantiate Police and Ambulance
         CreatePoliceAndAmbulanceAtEnd(ambulanceCar, policeCar);
-
-        ////Update NavMesh
-        //surface.BuildNavMesh();
-
-        //    List<int> path = FindPathStartToEndDepths(entryId, exitId);
-        //    foreach (int step in path)
-        //    {
-        //        Debug.Log("Debug Pathfinding: " + step.ToString());
-        //    }
-        //    Debug.Log("Debug Pathfinding: " + path.ToString());
-
+        //Moove Player and enemy
+        PutPlayerAndEnemyNearEntrance(player, enemy);
+        //Update NavMesh
+        surface.BuildNavMesh();
+        //List<int> path = FindPathStartToEndDepths(entryId, exitId);
+        //foreach (int step in path)
+        //{
+        //    Debug.Log("Debug Pathfinding: " + step.ToString());
+        //}
+        //Debug.Log("Debug Pathfinding: " + path.ToString());
+        sw.Stop();
+        Debug.Log("Elapsed= " + sw.Elapsed);
     }
 
     // Update is called once per frame
@@ -112,11 +119,11 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
             {
                 //Set Wall
                 int indexOfCell = cell.Id;
-                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall;
+                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + xMazeStart;
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
-                    xOfWall = mazeWidth * -lengthWall;
+                    xOfWall = mazeWidth * -lengthWall + xMazeStart;
                 }
                 float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall;
                 Vector3 rot = new Vector3(0, 0, 0);
@@ -129,11 +136,11 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         {
             //Set Wall
             int indexOfCell = cell.Id;
-            float xOfWall = (indexOfCell % mazeWidth) * -lengthWall;
+            float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + xMazeStart;
             if (indexOfCell % mazeWidth == 0)
             {
                 //last cell of row
-                xOfWall = mazeWidth * -lengthWall;
+                xOfWall = mazeWidth * -lengthWall + xMazeStart;
             }
             float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall;
             Vector3 rot = new Vector3(0, 0, 0);
@@ -158,11 +165,11 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
             {
                 //Set Wall
                 int indexOfCell = cell.Id;
-                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + lengthWall / 2;
+                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + lengthWall / 2 + xMazeStart;
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
-                    xOfWall = mazeWidth * -lengthWall + lengthWall / 2;
+                    xOfWall = mazeWidth * -lengthWall + lengthWall / 2 + xMazeStart;
                 }
                 float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall + beautifyZShift;
                 Vector3 rot = new Vector3(0, 90, 0);
@@ -175,11 +182,11 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         {
             //Set Wall
             int indexOfCell = cell.Id;
-            float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + lengthWall / 2;
+            float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + lengthWall / 2 + xMazeStart;
             if (indexOfCell % mazeWidth == 0)
             {
                 //last cell of row
-                xOfWall = mazeWidth * -lengthWall + lengthWall / 2;
+                xOfWall = mazeWidth * -lengthWall + lengthWall / 2 + xMazeStart;
             }
             float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall + beautifyZShift;
             Vector3 rot = new Vector3(0, 90, 0);
@@ -205,11 +212,11 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
             {
                 //Set Wall
                 int indexOfCell = cell.Id;
-                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall - lengthWall / 2;
+                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall - lengthWall / 2 + xMazeStart;
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
-                    xOfWall = mazeWidth * -lengthWall - lengthWall / 2;
+                    xOfWall = mazeWidth * -lengthWall - lengthWall / 2 + xMazeStart;
                 }
                 float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall + beautifyZShift;
                 Vector3 rot = new Vector3(0, 90, 0);
@@ -222,11 +229,11 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         {
             //Set Wall
             int indexOfCell = cell.Id;
-            float xOfWall = (indexOfCell % mazeWidth) * -lengthWall - lengthWall / 2;
+            float xOfWall = (indexOfCell % mazeWidth) * -lengthWall - lengthWall / 2 + xMazeStart;
             if (indexOfCell % mazeWidth == 0)
             {
                 //last cell of row
-                xOfWall = mazeWidth * -lengthWall - lengthWall / 2;
+                xOfWall = mazeWidth * -lengthWall - lengthWall / 2 + xMazeStart;
             }
             float zOfWall = ((indexOfCell - 1) / mazeWidth) * lengthWall + 2 * widthWall + widthWall + beautifyZShift;
             Vector3 rot = new Vector3(0, 90, 0);
@@ -252,11 +259,11 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
             {
                 //Set Wall
                 int indexOfCell = cell.Id;
-                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall;
+                float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + xMazeStart;
                 if (indexOfCell % mazeWidth == 0)
                 {
                     //last cell of row
-                    xOfWall = mazeWidth * -lengthWall;
+                    xOfWall = mazeWidth * -lengthWall + xMazeStart;
                 }
                 float zOfWall = ((indexOfCell - 1) / mazeWidth + 1) * lengthWall + 2 * widthWall;
                 Vector3 rot = new Vector3(0, 0, 0);
@@ -269,11 +276,11 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         {
             //Set Wall
             int indexOfCell = cell.Id;
-            float xOfWall = (indexOfCell % mazeWidth) * -lengthWall;
+            float xOfWall = (indexOfCell % mazeWidth) * -lengthWall + xMazeStart;
             if (indexOfCell % mazeWidth == 0)
             {
                 //last cell of row
-                xOfWall = mazeWidth * -lengthWall;
+                xOfWall = mazeWidth * -lengthWall + xMazeStart;
             }
             float zOfWall = ((indexOfCell - 1) / mazeWidth + 1) * lengthWall + 2 * widthWall;
             Vector3 rot = new Vector3(0, 0, 0);
@@ -285,21 +292,16 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
 
     private void DeleteWallsDepthFirst(Cell randomCell)
     {
-        Debug.Log("Starting with Cell: " + randomCell);
         randomCell.Visited = true;
         Cell rightNeighbor, leftNeighbor, topNeighbor, bottomNeighbor;
         GetNeighborCells(randomCell, out rightNeighbor, out leftNeighbor, out topNeighbor, out bottomNeighbor);
-        Debug.Log("Right Neighbor: " + rightNeighbor.Id
-        + "\n Left Neighbor: " + leftNeighbor.Id
-        + "\n Top Neighbor: " + topNeighbor.Id
-        + "\n Bottom Neighbor: " + bottomNeighbor.Id);
 
         while (rightNeighbor.Visited == false || leftNeighbor.Visited == false || topNeighbor.Visited == false || bottomNeighbor.Visited == false)
         {
             int randNumber = Random.Range(1, 5);
             if (randNumber == 1 && rightNeighbor.Visited == false)
             {
-                Debug.Log("Delete Right Wall between: " + randomCell.Id + "-" + rightNeighbor.Id);
+                //Debug.Log("Delete  Wall between: " + randomCell.Id + "-" + rightNeighbor.Id);
                 Destroy(randomCell.RightWall);
                 randomCell.RightWall = null;
                 rightNeighbor.LeftWall = null;
@@ -307,7 +309,7 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
             }
             else if (randNumber == 2 && leftNeighbor.Visited == false)
             {
-                Debug.Log("Delete Left Wall between: " + randomCell.Id + "-" + leftNeighbor.Id);
+                //Debug.Log("Delete Left Wall between: " + randomCell.Id + "-" + leftNeighbor.Id);
                 Destroy(randomCell.LeftWall);
                 randomCell.LeftWall = null;
                 leftNeighbor.RightWall = null;
@@ -315,7 +317,7 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
             }
             else if (randNumber == 3 && topNeighbor.Visited == false)
             {
-                Debug.Log("Delete Top Wall between: " + randomCell.Id + "-" + topNeighbor.Id);
+                //Debug.Log("Delete Top Wall between: " + randomCell.Id + "-" + topNeighbor.Id);
                 Destroy(randomCell.TopWall);
                 randomCell.TopWall = null;
                 topNeighbor.BottomWall = null;
@@ -323,7 +325,7 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
             }
             else if (randNumber == 4 && bottomNeighbor.Visited == false)
             {
-                Debug.Log("Delete Bottom Wall between: " + randomCell.Id + "-" + bottomNeighbor.Id);
+                //Debug.Log("Delete Bottom Wall between: " + randomCell.Id + "-" + bottomNeighbor.Id);
                 Destroy(randomCell.BottomWall);
                 randomCell.BottomWall = null;
                 bottomNeighbor.TopWall = null;
@@ -404,80 +406,88 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         Instantiate(ambulanceCar, new Vector3(exitX - 4, exitY, exitZ + 10), Quaternion.Euler(rot2), maze.transform);
     }
 
-    //private List<int> FindPathStartToEndDepths(int startId, int endId)
-    //{
-    //    foreach (Cell cell in cellsOfMaze)
-    //    {
-    //        cell.Visited = false;
-    //    }
+    private void PutPlayerAndEnemyNearEntrance(GameObject player, GameObject enemy)
+    {
+        player.transform.position = new Vector3(entryX, entryY, entryZ - 2);
+        Vector3 rot2 = new Vector3(0, 0, 0);
+        Vector3 position2 = new Vector3(entryX, entryY, entryZ - 2);
+        Instantiate(enemy, position2, Quaternion.Euler(rot2), maze.transform);
+    }
 
-    //    Cell startCell = FindCellInCellList(startId);
+    private List<int> FindPathStartToEndDepths(int startId, int endId)
+    {
+        foreach (KeyValuePair<int, Cell> cell in cellsOfMaze)
+        {
+            cell.Value.Visited = false;
+        }
 
-    //    Queue<int> queue = new Queue<int>();
-    //    queue.Enqueue(startId);
+        Cell startCell = cellsOfMaze[startId];
 
-    //    while (queue.Count > 0)
-    //    {
-    //        int currentCellId = queue.Dequeue();
-    //        Cell currentCell = FindCellInCellList(currentCellId);
-    //        if (currentCellId == endId)
-    //        {
-    //            currentCell.VisitedCells.Add(currentCellId);
-    //            return currentCell.VisitedCells;
-    //        }
+        Queue<int> queue = new Queue<int>();
+        queue.Enqueue(startId);
 
-    //        else
-    //        {
-    //            if (currentCell.BottomNeighbor > 0 && (currentCell.BottomWall == null | currentCell.BottomNeighbor == exitId))
-    //            {
-    //                Cell bottomCell = FindCellInCellList(currentCell.BottomNeighbor);
-    //                if (bottomCell.Visited == false)
-    //                {
+        while (queue.Count > 0)
+        {
+            int currentCellId = queue.Dequeue();
+            Cell currentCell = cellsOfMaze[currentCellId];
+            if (currentCellId == endId)
+            {
+                currentCell.VisitedCells.Add(currentCellId);
+                return currentCell.VisitedCells;
+            }
 
-    //                    bottomCell.VisitedCells = currentCell.VisitedCells;
-    //                    bottomCell.VisitedCells.Add(currentCellId);
-    //                    queue.Enqueue(bottomCell.Id);
-    //                }
-    //            }
+            else
+            {
+                if (currentCell.BottomNeighbor > 0 && (currentCell.BottomWall == null | currentCell.BottomNeighbor == exitId))
+                {
+                    Cell bottomCell = cellsOfMaze[currentCell.BottomNeighbor];
+                    if (bottomCell.Visited == false)
+                    {
 
-    //            if (currentCell.TopNeighbor > 0 && (currentCell.TopWall == null | currentCell.TopNeighbor == exitId))
-    //            {
-    //                Cell topCell = FindCellInCellList(currentCell.TopNeighbor);
-    //                if (topCell.Visited == false)
-    //                {
+                        bottomCell.VisitedCells = currentCell.VisitedCells;
+                        bottomCell.VisitedCells.Add(currentCellId);
+                        queue.Enqueue(bottomCell.Id);
+                    }
+                }
 
-    //                    topCell.VisitedCells = currentCell.VisitedCells;
-    //                    topCell.VisitedCells.Add(currentCellId);
-    //                    queue.Enqueue(topCell.Id);
-    //                }
-    //            }
+                if (currentCell.TopNeighbor > 0 && (currentCell.TopWall == null | currentCell.TopNeighbor == exitId))
+                {
+                    Cell topCell = cellsOfMaze[currentCell.TopNeighbor];
+                    if (topCell.Visited == false)
+                    {
 
-    //            if (currentCell.LeftNeighbor > 0 && (currentCell.LeftWall == null | currentCell.LeftNeighbor == exitId))
-    //            {
-    //                Cell leftCell = FindCellInCellList(currentCell.LeftNeighbor);
-    //                if (leftCell.Visited == false)
-    //                {
+                        topCell.VisitedCells = currentCell.VisitedCells;
+                        topCell.VisitedCells.Add(currentCellId);
+                        queue.Enqueue(topCell.Id);
+                    }
+                }
 
-    //                    leftCell.VisitedCells = currentCell.VisitedCells;
-    //                    leftCell.VisitedCells.Add(currentCellId);
-    //                    queue.Enqueue(leftCell.Id);
-    //                }
-    //            }
+                if (currentCell.LeftNeighbor > 0 && (currentCell.LeftWall == null | currentCell.LeftNeighbor == exitId))
+                {
+                    Cell leftCell = cellsOfMaze[currentCell.LeftNeighbor];
+                    if (leftCell.Visited == false)
+                    {
 
-    //            if (currentCell.RightNeighbor > 0 && (currentCell.RightWall == null | currentCell.RightNeighbor == exitId))
-    //            {
-    //                Cell rightCell = FindCellInCellList(currentCell.RightNeighbor);
-    //                if (rightCell.Visited == false)
-    //                {
+                        leftCell.VisitedCells = currentCell.VisitedCells;
+                        leftCell.VisitedCells.Add(currentCellId);
+                        queue.Enqueue(leftCell.Id);
+                    }
+                }
 
-    //                    rightCell.VisitedCells = currentCell.VisitedCells;
-    //                    rightCell.VisitedCells.Add(currentCellId);
-    //                    queue.Enqueue(rightCell.Id);
-    //                }
-    //            }
-    //        }
-    //    }
-    //    return null;
-    //}
+                if (currentCell.RightNeighbor > 0 && (currentCell.RightWall == null | currentCell.RightNeighbor == exitId))
+                {
+                    Cell rightCell = cellsOfMaze[currentCell.RightNeighbor];
+                    if (rightCell.Visited == false)
+                    {
+
+                        rightCell.VisitedCells = currentCell.VisitedCells;
+                        rightCell.VisitedCells.Add(currentCellId);
+                        queue.Enqueue(rightCell.Id);
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }
 

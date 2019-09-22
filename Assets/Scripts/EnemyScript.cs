@@ -7,12 +7,13 @@ public class EnemyScript : MonoBehaviour
 {
     Animator animator;
     NavMeshAgent navMeshAgent;
-    public GameObject player;
+    private GameObject player;
 
     bool running;
     // Start is called before the first frame update
     void Start()
     {
+        player = GameObject.Find("Player_Game");
         animator = gameObject.GetComponent<Animator>();
         navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
         running = false;
@@ -21,27 +22,15 @@ public class EnemyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        //transform.rotation = transform.rotation * Quaternion.Euler(0, 90,0);
         if (navMeshAgent.speed > 0.75)
         {
             running = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (!running)
-            {
-                running = true;
-            }
-            else
-            {
-                running = false;
-            }
-        }
-
         //Agent should run towards the player
         navMeshAgent.SetDestination(player.transform.position);
 
-        animator.SetBool("Running", running);
+        animator.SetBool("running", running);
     }
 }

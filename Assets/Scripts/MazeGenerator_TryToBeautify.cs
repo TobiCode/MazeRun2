@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.AI;
+using Debug = UnityEngine.Debug;
+
 
 public class MazeGenerator_TryToBeautify: MonoBehaviour
 {
@@ -37,9 +40,10 @@ public class MazeGenerator_TryToBeautify: MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
         //Every Startup we want a random material for the walls
         materials = Resources.LoadAll<Material>("WallMats");
-        Debug.Log("Materials Debug: " + materials);
         int randomNumber = Random.RandomRange(0, materials.Length - 1);
         wallPrefab.GetComponent<MeshRenderer>().material = materials[randomNumber];
 
@@ -57,11 +61,13 @@ public class MazeGenerator_TryToBeautify: MonoBehaviour
         //Update NavMesh
         surface.BuildNavMesh();
 
-        List<int> path = FindPathStartToEndDepths(entryId, exitId);
-        foreach (int step in path){
-            Debug.Log("Debug Pathfinding: " + step.ToString());
-        }
-        Debug.Log("Debug Pathfinding: " + path.ToString());
+        //List<int> path = FindPathStartToEndDepths(entryId, exitId);
+        //foreach (int step in path){
+        //    Debug.Log("Debug Pathfinding: " + step.ToString());
+        //}
+        //Debug.Log("Debug Pathfinding: " + path.ToString());
+        sw.Stop();
+        Debug.Log("Elapsed= " + sw.Elapsed);
     }
 
     // Update is called once per frame
@@ -350,7 +356,7 @@ public class MazeGenerator_TryToBeautify: MonoBehaviour
             if(randNumber == 1 && rightNeighbor.Visited == false)
             {
                 //Connect with rightNeighbor
-                Debug.Log("Delete Right Wall between: " + randomCell.Id + "-" + rightNeighbor.Id);
+                //Debug.Log("Delete Right Wall between: " + randomCell.Id + "-" + rightNeighbor.Id);
                 Destroy(randomCell.RightWall);
                 randomCell.RightWall = null;
                 rightNeighbor.LeftWall = null;
@@ -359,7 +365,7 @@ public class MazeGenerator_TryToBeautify: MonoBehaviour
             else if (randNumber == 2 && leftNeighbor.Visited == false)
             {
                 //Connect with leftNeighbor
-                Debug.Log("Delete Left Wall between: " + randomCell.Id + "-" + leftNeighbor.Id);
+                //Debug.Log("Delete Left Wall between: " + randomCell.Id + "-" + leftNeighbor.Id);
 
                 Destroy(randomCell.LeftWall);
                 randomCell.LeftWall = null;
@@ -369,7 +375,7 @@ public class MazeGenerator_TryToBeautify: MonoBehaviour
             else if (randNumber == 3 && topNeighbor.Visited == false)
             {
                 //Connect with topNeighbor
-                Debug.Log("Delete Top Wall between: " + randomCell.Id + "-" + topNeighbor.Id);
+                //Debug.Log("Delete Top Wall between: " + randomCell.Id + "-" + topNeighbor.Id);
 
                 Destroy(randomCell.TopWall);
                 randomCell.TopWall = null;
@@ -379,7 +385,7 @@ public class MazeGenerator_TryToBeautify: MonoBehaviour
             else if (randNumber == 4 && bottomNeighbor.Visited == false)
             {
                 //Connect with bottomNeighbor
-                Debug.Log("Delete Bottom Wall between: " + randomCell.Id + "-" + bottomNeighbor.Id);
+                //Debug.Log("Delete Bottom Wall between: " + randomCell.Id + "-" + bottomNeighbor.Id);
 
                 Destroy(randomCell.BottomWall);
                 randomCell.BottomWall = null;
@@ -401,7 +407,7 @@ public class MazeGenerator_TryToBeautify: MonoBehaviour
 
         //Create Exit
         int randomExitValue = Random.RandomRange(mazeHeight * mazeWidth - mazeWidth + 1, mazeHeight * mazeWidth);
-        Debug.Log("NullPointerExitGeneration: " + randomExitValue.ToString());
+        //Debug.Log("NullPointerExitGeneration: " + randomExitValue.ToString());
         Cell exitCell = FindCellInCellList(randomExitValue);
         exitX = exitCell.TopWall.transform.position.x;
         exitY = exitCell.TopWall.transform.position.y;
