@@ -8,8 +8,11 @@ public class EnemyScript : MonoBehaviour
     Animator animator;
     NavMeshAgent navMeshAgent;
     private GameObject player;
+    public float AttackDistance = 10;
+
 
     bool running;
+    bool attacking;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,9 +31,24 @@ public class EnemyScript : MonoBehaviour
             running = true;
         }
 
-        //Agent should run towards the player
-        navMeshAgent.SetDestination(player.transform.position);
+        else
+        {
+            running = false;
+        }
+
+        if (Vector3.Distance(transform.position, player.transform.position) < AttackDistance)
+        {
+            attacking = true;
+        }
+        else
+        {
+            attacking = false;
+        }
 
         animator.SetBool("running", running);
+        animator.SetBool("attacking", attacking);
+
+        //Agent should run towards the player
+        navMeshAgent.SetDestination(player.transform.position);
     }
 }

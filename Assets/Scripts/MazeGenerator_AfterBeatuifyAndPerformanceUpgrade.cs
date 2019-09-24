@@ -401,9 +401,10 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
     private void CreatePoliceAndAmbulanceAtEnd(GameObject ambulanceCar, GameObject policeCar)
     {
         Vector3 rot = new Vector3(0, 240, 0);
-        Instantiate(policeCar, new Vector3(exitX + 4, exitY, exitZ + 10), Quaternion.Euler(rot), maze.transform);
+        const float opticalCorrectnes = 0.2f;
+        Instantiate(policeCar, new Vector3(exitX + 4, exitY - opticalCorrectnes, exitZ + 10), Quaternion.Euler(rot), maze.transform);
         Vector3 rot2 = new Vector3(0, 120, 0);
-        Instantiate(ambulanceCar, new Vector3(exitX - 4, exitY, exitZ + 10), Quaternion.Euler(rot2), maze.transform);
+        Instantiate(ambulanceCar, new Vector3(exitX - 4, exitY- opticalCorrectnes, exitZ + 10), Quaternion.Euler(rot2), maze.transform);
     }
 
     private void PutPlayerAndEnemyNearEntrance(GameObject player, GameObject enemy)
