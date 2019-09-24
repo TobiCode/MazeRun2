@@ -38,9 +38,14 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
     private int exitId;
 
     private List<int> pathStartEnd;
+    public float distanceEnemy;
 
     // Start is called before the first frame update
     void Start()
+    {
+    }
+
+    public void GenerateMazeAndSetPlayerEnemyToEntry()
     {
         Stopwatch sw = new Stopwatch();
         sw.Start();
@@ -61,11 +66,13 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         //Update NavMesh
         surface.BuildNavMesh();
         //List<int> path = FindPathStartToEndDepths(entryId, exitId);
-        //foreach (int step in path)
-        //{
-        //    Debug.Log("Debug Pathfinding: " + step.ToString());
-        //}
-        //Debug.Log("Debug Pathfinding: " + path.ToString());
+        List<int> shortestPath = FindStartToEnd(entryId, exitId);
+        string shortestPathString = "";
+        foreach (int step in shortestPath)
+        {
+            shortestPathString = shortestPathString + step + ", ";
+        }
+        Debug.Log("Debug Pathfinding: " + shortestPathString);
         sw.Stop();
         Debug.Log("Elapsed= " + sw.Elapsed);
     }
@@ -404,17 +411,18 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         const float opticalCorrectnes = 0.2f;
         Instantiate(policeCar, new Vector3(exitX + 4, exitY - opticalCorrectnes, exitZ + 10), Quaternion.Euler(rot), maze.transform);
         Vector3 rot2 = new Vector3(0, 120, 0);
-        Instantiate(ambulanceCar, new Vector3(exitX - 4, exitY- opticalCorrectnes, exitZ + 10), Quaternion.Euler(rot2), maze.transform);
+        Instantiate(ambulanceCar, new Vector3(exitX - 4, exitY - opticalCorrectnes, exitZ + 10), Quaternion.Euler(rot2), maze.transform);
     }
 
     private void PutPlayerAndEnemyNearEntrance(GameObject player, GameObject enemy)
     {
         player.transform.position = new Vector3(entryX, entryY, entryZ - 2);
         Vector3 rot2 = new Vector3(0, 0, 0);
-        Vector3 position2 = new Vector3(entryX, entryY, entryZ - 2);
+        Vector3 position2 = new Vector3(entryX, entryY, entryZ - distanceEnemy);
         Instantiate(enemy, position2, Quaternion.Euler(rot2), maze.transform);
     }
 
+    //Deprecated
     private List<int> FindPathStartToEndDepths(int startId, int endId)
     {
         foreach (KeyValuePair<int, Cell> cell in cellsOfMaze)
@@ -486,6 +494,74 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
                         queue.Enqueue(rightCell.Id);
                     }
                 }
+            }
+        }
+        return null;
+    }
+
+    //Breadth First Search
+    //TODO: BreadthSearchCounterNotSetCorrectly, will set previous Cells in newNextCells.
+    private List<int> FindStartToEnd(int startId, int endId)
+    {
+        int counter = 0;
+        //cellsOfMaze[startId].BreathSearchCounter = counter;
+        List<int> nextCells = new List<int>();
+        nextCells.Add(startId);
+        do
+        {
+            List<int> newNextCells = new List<int>();
+            //Update counter of the NextCells and add their neighbors to the NewNextCellsList
+            foreach (int cellId in nextCells)
+            {
+                cellsOfMaze[cellId].BreathSearchCounter = counter;
+                cellsOfMaze[cellId].BreadthSearchCounterIsSet = true;
+                foreach (int newNextCellId in cellsOfMaze[cellId].GetVisitableCells())
+                {
+                    if(cellsOfMaze[newNextCellId].BreadthSearchCounterIsSet == false)
+                    {
+                        newNextCells.Add(newNextCellId);
+                    }
+                }
+            }
+            counter += 1;
+
+            //string debugText = "Test NewNextCells";
+            //foreach (int testId in newNextCells)
+            //{
+            //    debugText += testId + ", ";
+            //}
+            //Debug.Log(debugText);
+
+            nextCells = newNextCells;
+        }
+        while (!nextCells.Contains(endId));
+
+        //All counters set and EndCell reached. Now go back from the endcell to the startcell the path with the lowest 
+        Cell endCell = cellsOfMaze[endId];
+        endCell.BreathSearchCounter = counter;
+        List<int> shortestPath = new List<int>();
+        shortestPath.Add(endCell.Id);
+        do
+        {
+            //Debug.Log("Test: GoBack From" + endCell.ToString());
+            Cell nextCell = GetNextCellBackwardStepBreadthSearch(endCell);
+            shortestPath.Add(nextCell.Id);
+            endCell = nextCell;
+        }
+        while (endCell.Id != startId);
+        return shortestPath;
+    }
+
+    private Cell GetNextCellBackwardStepBreadthSearch(Cell currentCell)
+    {
+        List<int> neighborCells = currentCell.GetVisitableCells();
+        foreach (int neighborCellId in neighborCells)
+        {
+            //Debug.Log("Test: GoBack Neighbors" + cellsOfMaze[neighborCellId].ToString());
+
+            if (cellsOfMaze[neighborCellId].BreathSearchCounter == currentCell.BreathSearchCounter - 1)
+            {
+                return cellsOfMaze[neighborCellId];
             }
         }
         return null;
