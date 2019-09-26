@@ -10,6 +10,7 @@ public class CameraMazeScript : MonoBehaviour
     private int middleOfMaze;
     private List<int> pathStartEnd;
     public Camera mazeCam;
+    public float smoothSpeed = 0.125f;
 
 
     // Start is called before the first frame update
@@ -34,15 +35,10 @@ public class CameraMazeScript : MonoBehaviour
         if (mazeWidth % 2 == 0)
         {
             Cell refCell = cellsOfMaze[mazeWidth / 2];
-            Debug.Log("TestCam1: " + refCell.ToString());
             Vector2 middlePointRefCell = refCell.GetMiddlepointOfCellXandZ();
-            Debug.Log("TestCam1: " + middlePointRefCell.ToString());
             Cell refCell2 = cellsOfMaze[mazeWidth * mazeHeight - (mazeWidth / 2)];
-            Debug.Log("TestCam2: " + refCell2.ToString());
             Vector2 middlePointRefCell2 = refCell2.GetMiddlepointOfCellXandZ();
-            Debug.Log("TestCam2: " + middlePointRefCell2.ToString());
-            newPos = new Vector3(middlePointRefCell.x - 1.5f, 0, middlePointRefCell.y + (middlePointRefCell2.y - middlePointRefCell.y)/2);
-            Debug.Log("Result: " + newPos.ToString());
+            newPos = new Vector3(middlePointRefCell.x - 1.5f, (mazeWidth * mazeHeight) / 2, middlePointRefCell.y + (middlePointRefCell2.y - middlePointRefCell.y)/2);
         }
         else
         {
@@ -51,8 +47,22 @@ public class CameraMazeScript : MonoBehaviour
             Debug.Log("Camera Test: " + middleCell.ToString());
             Vector2 middlePoint = middleCell.GetMiddlepointOfCellXandZ();
             Debug.Log("Camera Test: " + middlePoint.ToString());
-            newPos = new Vector3(middlePoint.x , 0, middlePoint.y);
+            newPos = new Vector3(middlePoint.x , (mazeWidth*mazeHeight)/2, middlePoint.y);
         }
-        mazeCam.transform.position = newPos;
+
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position, newPos, smoothSpeed);
+        StartCoroutine(MoveObject(transform.position, newPos, 5f));
+        //mazeCam.transform.position = newPos;
+    }
+
+    IEnumerator MoveObject(Vector3 source, Vector3 target, float overTime)
+    {
+        float startTime = Time.time;
+        while (Time.time < startTime + overTime)
+        {
+            transform.position = Vector3.Lerp(source, target, (Time.time - startTime) / overTime);
+            yield return null;
+        }
+        transform.position = target;
     }
 }
