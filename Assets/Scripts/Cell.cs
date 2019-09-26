@@ -94,4 +94,40 @@ public class Cell
         return vistiableCells;
     }
 
+    public Vector2 GetMiddlepointOfCellXandZ()
+    {
+        if(this.BottomWall != null)
+        {
+            float wallWidth = this.BottomWall.transform.localScale.x;
+            float x = this.BottomWall.transform.position.x;
+            float z = this.BottomWall.transform.position.z + (wallWidth / 2);
+            return new Vector2(x, z);
+        }
+
+        if (this.TopWall != null)
+        {
+            float wallWidth = this.TopWall.transform.localScale.x;
+            float x = this.TopWall.transform.position.x;
+            float z = this.TopWall.transform.position.z - (wallWidth / 2);
+            return new Vector2(x, z);
+        }
+
+        if (this.RightWall != null)
+        {
+            float wallWidth = this.RightWall.transform.localScale.x;
+            float x = this.RightWall.transform.position.x - (wallWidth / 2);
+            float z = this.RightWall.transform.position.z;
+            return new Vector2(x, z);
+        }
+
+        if (this.LeftWall != null)
+        {
+            float wallWidth = this.LeftWall.transform.localScale.x;
+            float x = this.LeftWall.transform.position.x + (wallWidth / 2);
+            float z = this.LeftWall.transform.position.z;
+            return new Vector2(x, z);
+        }
+        return new Vector2();
+    }
+
 }

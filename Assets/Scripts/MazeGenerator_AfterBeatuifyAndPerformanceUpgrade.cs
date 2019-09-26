@@ -9,7 +9,7 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
 
     public NavMeshSurface surface;
 
-    private Dictionary<int, Cell> cellsOfMaze;
+    public Dictionary<int, Cell> cellsOfMaze;
 
     public int yOffsetWall;
     public int xMazeStart;
@@ -37,7 +37,7 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
     private float exitZ;
     private int exitId;
 
-    private List<int> pathStartEnd;
+    public List<int> pathStartEnd;
     public float distanceEnemy;
 
     // Start is called before the first frame update
