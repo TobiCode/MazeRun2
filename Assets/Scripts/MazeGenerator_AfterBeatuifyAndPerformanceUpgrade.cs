@@ -27,9 +27,9 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
     public float beautifyZShift;
 
     //Coordinates of entry and exit
-    private float entryX;
-    private float entryY;
-    private float entryZ;
+    public float entryX;
+    public float entryY;
+    public float entryZ;
     private int entryId;
 
     private float exitX;

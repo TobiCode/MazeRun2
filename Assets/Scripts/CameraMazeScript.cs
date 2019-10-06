@@ -10,7 +10,8 @@ public class CameraMazeScript : MonoBehaviour
     private int middleOfMaze;
     private List<int> pathStartEnd;
     public Camera mazeCam;
-    public float smoothSpeed = 0.125f;
+    private float overTime;
+    private bool isCameraMoved;
 
 
     // Start is called before the first frame update
@@ -21,7 +22,7 @@ public class CameraMazeScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void startMazeDiscovery()
@@ -38,24 +39,35 @@ public class CameraMazeScript : MonoBehaviour
             Vector2 middlePointRefCell = refCell.GetMiddlepointOfCellXandZ();
             Cell refCell2 = cellsOfMaze[mazeWidth * mazeHeight - (mazeWidth / 2)];
             Vector2 middlePointRefCell2 = refCell2.GetMiddlepointOfCellXandZ();
-            newPos = new Vector3(middlePointRefCell.x - 1.5f, (mazeWidth * mazeHeight) / 2, middlePointRefCell.y + (middlePointRefCell2.y - middlePointRefCell.y)/2);
+            newPos = new Vector3(middlePointRefCell.x - 1.5f, (mazeWidth * mazeHeight) / 2, middlePointRefCell.y + (middlePointRefCell2.y - middlePointRefCell.y) / 2);
         }
         else
         {
-            middleOfMaze = cellsOfMaze.Count / 2 +1;
+            middleOfMaze = cellsOfMaze.Count / 2 + 1;
             Cell middleCell = cellsOfMaze[middleOfMaze];
             Debug.Log("Camera Test: " + middleCell.ToString());
             Vector2 middlePoint = middleCell.GetMiddlepointOfCellXandZ();
             Debug.Log("Camera Test: " + middlePoint.ToString());
-            newPos = new Vector3(middlePoint.x , (mazeWidth*mazeHeight)/2, middlePoint.y);
+            newPos = new Vector3(middlePoint.x, (mazeWidth * mazeHeight) / 2, middlePoint.y);
         }
+        //height according to mazeWidth --> to keep whole maze in view
+        float height = 2.7f * mazeWidth + 1.0f;
+        newPos.y = height;
+        //mazeCam should start at the middle of the maze
+        float startingX = newPos.x;
+        mazeCam.transform.position = new Vector3(startingX, 2, -14);
+        //time accroding to size of maze
+        overTime = Mathf.Log(mazeWidth, 1.35f);
+        Debug.Log("Debug OverTime: " + overTime);
 
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, newPos, smoothSpeed);
-        StartCoroutine(MoveObject(transform.position, newPos, 5f));
-        //mazeCam.transform.position = newPos;
+        StartCoroutine(MoveCamera(transform.position, newPos, overTime));
+        Quaternion targetRotation = Quaternion.Euler(90, 0, 0);
+        StartCoroutine(RotateCamera(transform.rotation, targetRotation, overTime / 2));
+        Debug.Log("DebugCoroutines, MoveObjectFinished");
+        //
     }
 
-    IEnumerator MoveObject(Vector3 source, Vector3 target, float overTime)
+    IEnumerator MoveCamera(Vector3 source, Vector3 target, float overTime)
     {
         float startTime = Time.time;
         while (Time.time < startTime + overTime)
@@ -64,5 +76,25 @@ public class CameraMazeScript : MonoBehaviour
             yield return null;
         }
         transform.position = target;
+        isCameraMoved = true;
+    }
+
+    IEnumerator RotateCamera(Quaternion source, Quaternion target, float overTime)
+    {
+        float startTime = Time.time;
+        while (Time.time < startTime + overTime)
+        {
+            if (isCameraMoved)
+            {
+                transform.rotation = Quaternion.Lerp(source, target, (Time.time - startTime) / overTime);
+                yield return null;
+            }
+            else
+            {
+                startTime = Time.time;
+                yield return null;
+            }
+        }
+        transform.rotation = target;
     }
 }

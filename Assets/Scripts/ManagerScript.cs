@@ -21,8 +21,8 @@ public class ManagerScript : MonoBehaviour
         player.SetActive(false);
         enemy.SetActive(false);
         //Set width and height and generate Maze
-        mazeGenScript.mazeHeight = 6;
-        mazeGenScript.mazeWidth = 6;
+        mazeGenScript.mazeHeight = 10;
+        mazeGenScript.mazeWidth = 10;
         mazeGenScript.GenerateMazeAndSetPlayerEnemyToEntry();
         //Start Maze discovery
         cameraMazeScript.startMazeDiscovery();
