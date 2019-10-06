@@ -444,8 +444,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mazeGenScript: {fileID: 2126718512}
+  spotLight: {fileID: 1588640398202095989, guid: e7e36a64d0aab224a82ceeecf6ea7228,
+    type: 3}
   mazeCam: {fileID: 563093852}
-  overTime: 5
+  timeBetweenPathLight: 1
 --- !u!1 &602260319
 GameObject:
   m_ObjectHideFlags: 0

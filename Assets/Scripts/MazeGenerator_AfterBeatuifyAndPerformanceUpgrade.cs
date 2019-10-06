@@ -67,6 +67,7 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         surface.BuildNavMesh();
         //List<int> path = FindPathStartToEndDepths(entryId, exitId);
         List<int> shortestPath = FindStartToEnd(entryId, exitId);
+        pathStartEnd = shortestPath;
         string shortestPathString = "";
         foreach (int step in shortestPath)
         {

@@ -6,12 +6,17 @@ public class CameraMazeScript : MonoBehaviour
 {
 
     public MazeGenerator_AfterBeatuifyAndPerformanceUpgrade mazeGenScript;
+    public GameObject spotLight;
     private Dictionary<int, Cell> cellsOfMaze;
     private int middleOfMaze;
     private List<int> pathStartEnd;
     public Camera mazeCam;
+    public float timeBetweenPathLight;
     private float overTime;
     private bool isCameraMoved;
+    private bool isCameraRotated;
+    private bool isPathShown;
+
 
 
     // Start is called before the first frame update
@@ -45,9 +50,7 @@ public class CameraMazeScript : MonoBehaviour
         {
             middleOfMaze = cellsOfMaze.Count / 2 + 1;
             Cell middleCell = cellsOfMaze[middleOfMaze];
-            Debug.Log("Camera Test: " + middleCell.ToString());
             Vector2 middlePoint = middleCell.GetMiddlepointOfCellXandZ();
-            Debug.Log("Camera Test: " + middlePoint.ToString());
             newPos = new Vector3(middlePoint.x, (mazeWidth * mazeHeight) / 2, middlePoint.y);
         }
         //height according to mazeWidth --> to keep whole maze in view
@@ -58,13 +61,10 @@ public class CameraMazeScript : MonoBehaviour
         mazeCam.transform.position = new Vector3(startingX, 2, -14);
         //time accroding to size of maze
         overTime = Mathf.Log(mazeWidth, 1.35f);
-        Debug.Log("Debug OverTime: " + overTime);
-
         StartCoroutine(MoveCamera(transform.position, newPos, overTime));
         Quaternion targetRotation = Quaternion.Euler(90, 0, 0);
         StartCoroutine(RotateCamera(transform.rotation, targetRotation, overTime / 2));
-        Debug.Log("DebugCoroutines, MoveObjectFinished");
-        //
+        StartCoroutine(ShowPath(pathStartEnd, timeBetweenPathLight));
     }
 
     IEnumerator MoveCamera(Vector3 source, Vector3 target, float overTime)
@@ -96,5 +96,28 @@ public class CameraMazeScript : MonoBehaviour
             }
         }
         transform.rotation = target;
+        isCameraRotated = true;
+    }
+
+    IEnumerator ShowPath(List<int> pathStartEnd, float timeBetweenPathLight)
+    {
+        while (!isPathShown)
+        {
+            if (isCameraRotated)
+            {
+                Debug.Log("ShowPath: " + "called with List: " + pathStartEnd.ToString() + "Listsize:" + pathStartEnd.Count);
+
+                foreach (int cellId in pathStartEnd)
+                {
+                    Cell cell = cellsOfMaze[cellId];
+                    Vector2 middlePointOfCell = cell.GetMiddlepointOfCellXandZ();
+                    Instantiate(spotLight, new Vector3(middlePointOfCell.x, spotLight.transform.position.y, middlePointOfCell.y), spotLight.transform.rotation);
+                    Debug.Log("ShowPath: " + "Spotlight instantiated for id=" + cellId);
+                    yield return new WaitForSeconds(timeBetweenPathLight);
+                }
+                isPathShown = true;
+            }
+            yield return null;
+        }
     }
 }
