@@ -1,0 +1,6 @@
+>Add Difficulties:
+Easy, Medium, Hard -> Define minimum of path to exit. Generate as many mazes, as long the path is not bigger than the minimum according to 
+the difficulty.
+
+>Delete random walls of the labyritnh to have more branches and possible cycles. (Rewrite Shortest Pathfinding (robust against cycles))
+
