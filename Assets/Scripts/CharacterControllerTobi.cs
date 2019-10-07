@@ -24,13 +24,19 @@ public class CharacterControllerTobi : MonoBehaviour
     public Vector3 cameraPosLookingBack;
     public Vector3 cameraRotLookingBack;
 
+    AudioSource myAudioSource;
+    public AudioClip foot4; //Running
+    public AudioClip foot3; //Start/Stop Running
 
     private void Start()
     {
         animator = gameObject.GetComponent<Animator>();
         cameraInitPos = cameraFollowingPlayer.transform.localPosition;
         cameraInitRot = cameraFollowingPlayer.transform.localRotation;
+        myAudioSource = GetComponent<AudioSource>();
+
     }
+
 
     // Update is called once per frame
     private void Update()
@@ -41,14 +47,15 @@ public class CharacterControllerTobi : MonoBehaviour
         ApplyInput(moveAxis, turnAxis);
 
         //Look back
-        if(Input.GetKeyDown(KeyCode.Space)){
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
             cameraFollowingPlayer.transform.localPosition = cameraPosLookingBack;
             cameraFollowingPlayer.transform.localRotation = Quaternion.Euler(cameraRotLookingBack);
         }
         else if (Input.GetKeyUp(KeyCode.Space))
         {
             cameraFollowingPlayer.transform.localPosition = cameraInitPos;
-            cameraFollowingPlayer.transform.localRotation =  cameraInitRot;
+            cameraFollowingPlayer.transform.localRotation = cameraInitRot;
         }
 
 
@@ -58,6 +65,7 @@ public class CharacterControllerTobi : MonoBehaviour
     {
         Move(moveInput);
         Turn(turnInput);
+        AudioHandling(moveInput);
     }
 
     private void Move(float input)
@@ -68,14 +76,41 @@ public class CharacterControllerTobi : MonoBehaviour
         }
         else
         {
+            Debug.Log("Input Test: " + input.ToString());
             //Right now only Running
             transform.Translate(Vector3.forward * input * runSpeed);
             animator.SetFloat("speed", 2);
         }
     }
 
+    private void AudioHandling(float input)
+    {
+        //Audio
+        if (input > 0.8f)
+        {
+            myAudioSource.clip = foot4;
+            Audio();
+        }
+        else if (input > 0f)
+        {
+            myAudioSource.clip = foot3;
+            Audio();
+        }
+    }
+
     private void Turn(float input)
     {
         transform.Rotate(0, input * rotationRate * Time.deltaTime, 0);
+    }
+
+    private void Audio()
+    {
+        if (myAudioSource.isPlaying == false)
+        {
+            //Audio delay between each 
+            myAudioSource.volume = Random.Range(0.8f, 1);
+            myAudioSource.pitch = Random.Range(0.8f, 1);
+            myAudioSource.Play();
+        }
     }
 }
