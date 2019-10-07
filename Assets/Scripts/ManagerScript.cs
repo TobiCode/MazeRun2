@@ -5,10 +5,13 @@ using UnityEngine;
 public class ManagerScript : MonoBehaviour
 {
 
-    private int widthOfMaze;
-    private int heightOfMaze;
+    public int widthOfMaze;
+    public int heightOfMaze;
     public GameObject player;
     private GameObject enemy;
+    public GameObject mazeCam;
+    public GameObject PathLights;
+    private bool play;
 
 
     public MazeGenerator_AfterBeatuifyAndPerformanceUpgrade mazeGenScript;
@@ -16,14 +19,14 @@ public class ManagerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        enemy = mazeGenScript.enemy;
         //disable player and enemy
         player.SetActive(false);
-        enemy.SetActive(false);
         //Set width and height and generate Maze
-        mazeGenScript.mazeHeight = 10;
-        mazeGenScript.mazeWidth = 10;
+        mazeGenScript.mazeHeight = widthOfMaze;
+        mazeGenScript.mazeWidth = heightOfMaze;
         mazeGenScript.GenerateMazeAndSetPlayerEnemyToEntry();
+        enemy = mazeGenScript.enemyClone;
+        enemy.SetActive(false);
         //Start Maze discovery
         cameraMazeScript.startMazeDiscovery();
     }
@@ -31,6 +34,14 @@ public class ManagerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (cameraMazeScript.isCameraAtPlayer && !play)
+        {
+            PathLights.SetActive(false);
+            mazeCam.SetActive(false);
+            play = true;
+            player.SetActive(true);
+            enemy.SetActive(true);
+        }
         
     }
 }

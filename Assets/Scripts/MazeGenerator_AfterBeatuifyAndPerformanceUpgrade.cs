@@ -23,6 +23,7 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
     public GameObject ambulanceCar;
     public GameObject player;
     public GameObject enemy;
+    public GameObject enemyClone;
 
     public float beautifyZShift;
 
@@ -68,12 +69,12 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         //List<int> path = FindPathStartToEndDepths(entryId, exitId);
         List<int> shortestPath = FindStartToEnd(entryId, exitId);
         pathStartEnd = shortestPath;
-        string shortestPathString = "";
-        foreach (int step in shortestPath)
-        {
-            shortestPathString = shortestPathString + step + ", ";
-        }
-        Debug.Log("Debug Pathfinding: " + shortestPathString);
+        //string shortestPathString = "";
+        //foreach (int step in shortestPath)
+        //{
+        //    shortestPathString = shortestPathString + step + ", ";
+        //}
+        //Debug.Log("Debug Pathfinding: " + shortestPathString);
         sw.Stop();
         Debug.Log("Elapsed= " + sw.Elapsed);
     }
@@ -420,7 +421,7 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         player.transform.position = new Vector3(entryX, entryY, entryZ - 2);
         Vector3 rot2 = new Vector3(0, 0, 0);
         Vector3 position2 = new Vector3(entryX, entryY, entryZ - distanceEnemy);
-        Instantiate(enemy, position2, Quaternion.Euler(rot2), maze.transform);
+        enemyClone = Instantiate(enemy, position2, Quaternion.Euler(rot2));
     }
 
     //Deprecated

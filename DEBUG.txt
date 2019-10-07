@@ -1,0 +1,1 @@
+Remoove nullSetters in DeleteWallsDepthFirst to get a Maze again!

@@ -444,10 +444,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mazeGenScript: {fileID: 2126718512}
-  spotLight: {fileID: 1588640398202095989, guid: e7e36a64d0aab224a82ceeecf6ea7228,
+  spotLight: {fileID: 7569659414730363511, guid: ed370aa3d4b073a4fb8fa49ac01bf15b,
     type: 3}
+  spotLights: {fileID: 862495828}
+  cameraOfPlayer: {fileID: 1269073968}
   mazeCam: {fileID: 563093852}
-  timeBetweenPathLight: 1
+  timeBetweenPathLight: 0.5
+  isCameraAtPlayer: 0
 --- !u!1 &602260319
 GameObject:
   m_ObjectHideFlags: 0
@@ -491,9 +494,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f07b65d9ee973147a8ba81235c4b7d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  widthOfMaze: 5
+  heightOfMaze: 5
   player: {fileID: 1793386499}
+  mazeCam: {fileID: 563093850}
+  PathLights: {fileID: 862495828}
   mazeGenScript: {fileID: 2126718512}
   cameraMazeScript: {fileID: 563093855}
+--- !u!1 &862495828
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 862495829}
+  m_Layer: 0
+  m_Name: PathLights
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &862495829
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 862495828}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 25.599722, y: 9.393733, z: 19.09631}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!20 &1269073968 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 7295249430281648885, guid: 7a1ca102439254c4d8fc48382735c7f6,
+    type: 3}
+  m_PrefabInstance: {fileID: 1793386498}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1324845042
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,7 +807,7 @@ PrefabInstance:
     - target: {fileID: 2097042451603229499, guid: 5a221e22e7a58a44fa02ffd115aa3e45,
         type: 3}
       propertyPath: distanceEnemy
-      value: 15
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2097042451603229497, guid: 5a221e22e7a58a44fa02ffd115aa3e45,
         type: 3}

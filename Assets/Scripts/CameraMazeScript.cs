@@ -7,6 +7,8 @@ public class CameraMazeScript : MonoBehaviour
 
     public MazeGenerator_AfterBeatuifyAndPerformanceUpgrade mazeGenScript;
     public GameObject spotLight;
+    public GameObject spotLights;
+    public Camera cameraOfPlayer;
     private Dictionary<int, Cell> cellsOfMaze;
     private int middleOfMaze;
     private List<int> pathStartEnd;
@@ -16,8 +18,7 @@ public class CameraMazeScript : MonoBehaviour
     private bool isCameraMoved;
     private bool isCameraRotated;
     private bool isPathShown;
-
-
+    public bool isCameraAtPlayer;
 
     // Start is called before the first frame update
     void Start()
@@ -59,12 +60,14 @@ public class CameraMazeScript : MonoBehaviour
         //mazeCam should start at the middle of the maze
         float startingX = newPos.x;
         mazeCam.transform.position = new Vector3(startingX, 2, -14);
-        //time accroding to size of maze
-        overTime = Mathf.Log(mazeWidth, 1.35f);
+        //time accroding to size of maze 1.35f
+        overTime = Mathf.Log(mazeWidth, 1.55f);
         StartCoroutine(MoveCamera(transform.position, newPos, overTime));
         Quaternion targetRotation = Quaternion.Euler(90, 0, 0);
-        StartCoroutine(RotateCamera(transform.rotation, targetRotation, overTime / 2));
+        StartCoroutine(RotateCamera(transform.rotation, targetRotation, overTime / 3));
         StartCoroutine(ShowPath(pathStartEnd, timeBetweenPathLight));
+        StartCoroutine(GoToPlayer(transform.position, cameraOfPlayer.transform.position, overTime / 3));
+        StartCoroutine(RotateCameraAccrodingPlayer(transform.rotation, cameraOfPlayer.transform.rotation, overTime / 3));
     }
 
     IEnumerator MoveCamera(Vector3 source, Vector3 target, float overTime)
@@ -101,6 +104,7 @@ public class CameraMazeScript : MonoBehaviour
 
     IEnumerator ShowPath(List<int> pathStartEnd, float timeBetweenPathLight)
     {
+        pathStartEnd.Reverse();
         while (!isPathShown)
         {
             if (isCameraRotated)
@@ -111,13 +115,53 @@ public class CameraMazeScript : MonoBehaviour
                 {
                     Cell cell = cellsOfMaze[cellId];
                     Vector2 middlePointOfCell = cell.GetMiddlepointOfCellXandZ();
-                    Instantiate(spotLight, new Vector3(middlePointOfCell.x, spotLight.transform.position.y, middlePointOfCell.y), spotLight.transform.rotation);
-                    Debug.Log("ShowPath: " + "Spotlight instantiated for id=" + cellId);
+                    Instantiate(spotLight, new Vector3(middlePointOfCell.x, spotLight.transform.position.y, middlePointOfCell.y), spotLight.transform.rotation, spotLights.transform);
                     yield return new WaitForSeconds(timeBetweenPathLight);
                 }
                 isPathShown = true;
             }
             yield return null;
         }
+    }
+
+    IEnumerator GoToPlayer(Vector3 source, Vector3 target, float overTime)
+    {
+       
+        float startTime = Time.time;
+        while (Time.time < startTime + overTime)
+        {
+            if (isPathShown)
+            {
+                transform.position = Vector3.Lerp(source, target, (Time.time - startTime) / overTime);
+                yield return null;
+            }
+            else
+            {
+                startTime = Time.time;
+                yield return null;
+            }
+        }
+        transform.position = target;
+        isCameraAtPlayer = true;
+    }
+
+    IEnumerator RotateCameraAccrodingPlayer(Quaternion source, Quaternion target, float overTime)
+    {
+        float startTime = Time.time;
+        while (Time.time < startTime + overTime)
+        {
+            if (isPathShown)
+            {
+                transform.rotation = Quaternion.Lerp(source, target, (Time.time - startTime) / overTime);
+                yield return null;
+            }
+            else
+            {
+                startTime = Time.time;
+                yield return null;
+            }
+        }
+        transform.rotation = target;
+        isCameraRotated = true;
     }
 }
