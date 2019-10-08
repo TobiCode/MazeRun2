@@ -10,6 +10,9 @@ public class CharacterControllerTobi : MonoBehaviour
     private string TurnInputAxis = "Horizontal";
     private Animator animator;
 
+    //live
+    private int live = 1;
+
     // rotation that occurs in angles per second holding down input
     public float rotationRate = 180;
 
@@ -27,6 +30,8 @@ public class CharacterControllerTobi : MonoBehaviour
     AudioSource myAudioSource;
     public AudioClip foot4; //Running
     public AudioClip foot3; //Start/Stop Running
+
+    public int Live { get => live; set => live = value; }
 
     private void Start()
     {

@@ -39,6 +39,7 @@ public class EnemyScript : MonoBehaviour
         if (Vector3.Distance(transform.position, player.transform.position) < AttackDistance)
         {
             attacking = true;
+            player.GetComponent<CharacterControllerTobi>().Live -= 1; 
         }
         else
         {
