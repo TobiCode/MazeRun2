@@ -61,7 +61,7 @@ public class CameraMazeScript : MonoBehaviour
         float startingX = newPos.x;
         mazeCam.transform.position = new Vector3(startingX, 2, -14);
         //time accroding to size of maze 1.35f
-        overTime = Mathf.Log(mazeWidth, 1.55f);
+        overTime = Mathf.Log(mazeWidth, 1.35f);
         StartCoroutine(MoveCamera(transform.position, newPos, overTime));
         Quaternion targetRotation = Quaternion.Euler(90, 0, 0);
         StartCoroutine(RotateCamera(transform.rotation, targetRotation, overTime / 3));

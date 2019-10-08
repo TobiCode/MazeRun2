@@ -76,7 +76,6 @@ public class CharacterControllerTobi : MonoBehaviour
         }
         else
         {
-            Debug.Log("Input Test: " + input.ToString());
             //Right now only Running
             transform.Translate(Vector3.forward * input * runSpeed);
             animator.SetFloat("speed", 2);

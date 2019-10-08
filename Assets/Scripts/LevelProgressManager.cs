@@ -2,22 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelProgressManager : MonoBehaviour
+public class LevelProgressManager
 {
     public static int levelProgress;
     // Start is called before the first frame update
-    void Start()
-    {
-        levelProgress = LoadProgress();
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    static void SaveLevelProgress(int progress)
+    public static void SaveLevelProgress(int progress)
     {
         if (levelProgress < progress)
         {
@@ -26,7 +16,7 @@ public class LevelProgressManager : MonoBehaviour
         }
     }
 
-    static int LoadProgress()
+    public static int LoadProgress()
     {
         int progress = PlayerPrefs.GetInt("level_Progress", 1);
         if (progress > levelProgress)

@@ -24,6 +24,8 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
     public GameObject player;
     public GameObject enemy;
     public GameObject enemyClone;
+    public GameObject finish;
+    public GameObject finishClone;
 
     public float beautifyZShift;
 
@@ -62,6 +64,8 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         CreateEntryAndExitOfMaze(mazeWidth, mazeHeight);
         //Instantiate Police and Ambulance
         CreatePoliceAndAmbulanceAtEnd(ambulanceCar, policeCar);
+        //Instantiate Finish
+        CreateFinishAtEnd(finish);
         //Moove Player and enemy
         PutPlayerAndEnemyNearEntrance(player, enemy);
         //Update NavMesh
@@ -411,10 +415,16 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
     {
         Vector3 rot = new Vector3(0, 240, 0);
         const float opticalCorrectnes = 0.2f;
-        Instantiate(policeCar, new Vector3(exitX + 4, exitY - opticalCorrectnes, exitZ + 10), Quaternion.Euler(rot), maze.transform);
+        Instantiate(policeCar, new Vector3(exitX + 4, exitY - opticalCorrectnes, exitZ + 6), Quaternion.Euler(rot), maze.transform);
         Vector3 rot2 = new Vector3(0, 120, 0);
-        Instantiate(ambulanceCar, new Vector3(exitX - 4, exitY - opticalCorrectnes, exitZ + 10), Quaternion.Euler(rot2), maze.transform);
+        Instantiate(ambulanceCar, new Vector3(exitX - 4, exitY - opticalCorrectnes, exitZ + 6), Quaternion.Euler(rot2), maze.transform);
     }
+
+    private void CreateFinishAtEnd(GameObject finish)
+    {
+        this.finishClone = Instantiate(finish, new Vector3(exitX, exitY, exitZ + 0.5f), finish.transform.rotation);
+    }
+
 
     private void PutPlayerAndEnemyNearEntrance(GameObject player, GameObject enemy)
     {
