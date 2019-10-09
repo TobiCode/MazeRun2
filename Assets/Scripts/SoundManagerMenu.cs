@@ -4,36 +4,33 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
 
-public class SoundManagerScript : MonoBehaviour
+public class SoundManagerMenu : MonoBehaviour
 {
     public Text Mute1;
     public Text Mute2;
     private bool mute;
     public AudioSource audioSource;
-    public AudioSource audioSource2;
     private AudioClip[] soundClips;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        soundClips = Resources.LoadAll<AudioClip>("SoundAmbient");
+        soundClips = Resources.LoadAll<AudioClip>("SoundSave");
         int randomNumber = Random.RandomRange(0, soundClips.Length - 1);
         AudioClip toPlay = soundClips[randomNumber];
         audioSource.clip = toPlay;
-        audioSource2.clip = toPlay;
         Audio();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (audioSource.isPlaying == false && audioSource2.isPlaying == false)
+        if (audioSource.isPlaying == false)
         {
             int randomNumber = Random.RandomRange(0, soundClips.Length - 1);
             AudioClip toPlay = soundClips[randomNumber];
             audioSource.clip = toPlay;
-            audioSource2.clip = toPlay;
             Audio();
         }
     }
@@ -58,11 +55,10 @@ public class SoundManagerScript : MonoBehaviour
 
     private void Audio()
     {
-        if (audioSource.isPlaying == false && audioSource2.isPlaying == false)
+        if (audioSource.isPlaying == false)
         {
             //Audio delay between each 
             audioSource.Play();
-            audioSource2.Play();
         }
     }
 }
