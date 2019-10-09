@@ -51,6 +51,7 @@ public class CharacterControllerTobi : MonoBehaviour
         else if (other.tag == "Finish")
         {
             //You won
+            animator.SetFloat("speed", 0);
             this.Live += 1;
         }
     }
