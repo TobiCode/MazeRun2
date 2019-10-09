@@ -19,6 +19,7 @@ public class GameManagerScript : MonoBehaviour
     public GameObject PathLights;
     public GameObject gameUIObject;
     public GameObject gameOverUIObject;
+    public GameObject gameFinishUIObject;
     public Image darkenImage;
     public Image scratch1;
     public Image scratch2;
@@ -73,6 +74,19 @@ public class GameManagerScript : MonoBehaviour
                 StartCoroutine(FadeImage(false, darkenImage, 240f, 0.5f));
             }
         }
+        else if(playerScript.Live >= 2)
+        {
+            playerScript.enabled = false;
+            enemy.SetActive(false);
+            gameFinishUIObject.SetActive(true);
+            gameUIObject.SetActive(false);
+        }
+    }
+
+    public void BackToMenuNextLevel()
+    {
+        LevelProgressManager.SaveLevelProgress(LevelProgressManager.levelProgress + 1);
+        SceneManager.LoadScene(0);
     }
 
     public void BackToMenu()

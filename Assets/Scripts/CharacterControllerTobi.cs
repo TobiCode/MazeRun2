@@ -39,7 +39,20 @@ public class CharacterControllerTobi : MonoBehaviour
         cameraInitPos = cameraFollowingPlayer.transform.localPosition;
         cameraInitRot = cameraFollowingPlayer.transform.localRotation;
         myAudioSource = GetComponent<AudioSource>();
+    }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Border")
+        {
+            this.Live -= 1;
+
+        }
+        else if (other.tag == "Finish")
+        {
+            //You won
+            this.Live += 1;
+        }
     }
 
 
@@ -62,8 +75,6 @@ public class CharacterControllerTobi : MonoBehaviour
             cameraFollowingPlayer.transform.localPosition = cameraInitPos;
             cameraFollowingPlayer.transform.localRotation = cameraInitRot;
         }
-
-
     }
 
     private void ApplyInput(float moveInput, float turnInput)
@@ -117,4 +128,5 @@ public class CharacterControllerTobi : MonoBehaviour
             myAudioSource.Play();
         }
     }
+
 }

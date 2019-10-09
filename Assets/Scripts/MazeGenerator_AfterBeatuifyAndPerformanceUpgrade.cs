@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
+using System;
+using Random = UnityEngine.Random;
 
 public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
 {
@@ -23,9 +25,16 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
     public GameObject ambulanceCar;
     public GameObject player;
     public GameObject enemy;
+    [HideInInspector]
     public GameObject enemyClone;
     public GameObject finish;
+    [HideInInspector]
     public GameObject finishClone;
+    public GameObject border;
+    [HideInInspector]
+    public GameObject borderClone1;
+    [HideInInspector]
+    public GameObject borderClone2;
 
     public float beautifyZShift;
 
@@ -66,6 +75,8 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         CreatePoliceAndAmbulanceAtEnd(ambulanceCar, policeCar);
         //Instantiate Finish
         CreateFinishAtEnd(finish);
+        //Instantiate Borders
+        CreateBorders(border, mazeWidth);
         //Moove Player and enemy
         PutPlayerAndEnemyNearEntrance(player, enemy);
         //Update NavMesh
@@ -409,6 +420,18 @@ public class MazeGenerator_AfterBeatuifyAndPerformanceUpgrade : MonoBehaviour
         exitZ = exitCell.TopWall.transform.position.z;
         exitId = exitCell.Id;
         Destroy((exitCell.TopWall));
+    }
+
+
+    private void CreateBorders(GameObject border, int mazeWidth)
+    {
+        Cell firstCell = cellsOfMaze[1];
+        Vector2 firstCellCoordinates = firstCell.GetMiddlepointOfCellXandZ();
+        Cell lastCell = cellsOfMaze[mazeWidth];
+        Vector2 lastCellCoordinates = lastCell.GetMiddlepointOfCellXandZ();
+        this.borderClone1 = Instantiate(border, new Vector3(firstCellCoordinates.x+2.1f, border.transform.position.y, border.transform.position.y), border.transform.rotation);
+        this.borderClone2 = Instantiate(border, new Vector3(lastCellCoordinates.x- 2.1f, border.transform.position.y, border.transform.position.y), border.transform.rotation);
+
     }
 
     private void CreatePoliceAndAmbulanceAtEnd(GameObject ambulanceCar, GameObject policeCar)

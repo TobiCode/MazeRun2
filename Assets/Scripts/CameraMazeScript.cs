@@ -59,7 +59,7 @@ public class CameraMazeScript : MonoBehaviour
         newPos.y = height;
         //mazeCam should start at the middle of the maze
         float startingX = newPos.x;
-        mazeCam.transform.position = new Vector3(startingX, 2, -14);
+        mazeCam.transform.position = new Vector3(startingX, 2, -17);
         //time accroding to size of maze 1.35f
         overTime = Mathf.Log(mazeWidth, 1.35f);
         StartCoroutine(MoveCamera(transform.position, newPos, overTime));
